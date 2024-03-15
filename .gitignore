@@ -21,6 +21,9 @@
 .idea/**/gradle.xml
 .idea/**/libraries
 
+# VSCode
+.vscode
+
 # CMake
 cmake-build-debug/
 

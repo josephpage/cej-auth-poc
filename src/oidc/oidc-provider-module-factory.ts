@@ -1,5 +1,5 @@
 import { FactoryProvider } from '@nestjs/common';
-// @ts-ignore
+// @ts-expect-error - We're importing both the default and the named exports from the oidc-provider package.
 import type ESMProvider, { interactionPolicy, errors } from 'oidc-provider';
 
 /**

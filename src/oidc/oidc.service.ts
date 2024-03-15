@@ -1,5 +1,4 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Request, Response } from 'express';
 
 import {
   OIDC_PROVIDER_MODULE,
@@ -19,7 +18,7 @@ export class OidcService {
     });
   }
 
-  public callback(req: Request, res: Response): any {
-    return this.oidc.callback(req, res);
-  }
+  callback: Provider['callback'] = () => {
+    return this.oidc.callback();
+  };
 }
