@@ -1,15 +1,14 @@
 import { Controller, All, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-
-import { oidc } from './oidc.server';
-
-const callback = oidc.callback();
+import type { OidcService } from './oidc.service';
 
 @Controller('oidc')
 export class OidcController {
+  constructor(private readonly OidcService: OidcService) {}
+
   @All('/*')
   public mountedOidc(@Req() req: Request, @Res() res: Response): Promise<void> {
     req.url = req.originalUrl.replace('/oidc', '');
-    return callback(req, res);
+    return this.OidcService.callback(req, res);
   }
 }
