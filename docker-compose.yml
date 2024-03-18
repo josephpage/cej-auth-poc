@@ -1,0 +1,60 @@
+---
+volumes:
+  db-data:
+  redis-data:
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - '5000:5000' # Application
+      - '9229:9229' # NodeJS debugger
+    environment:
+      PORT: 5000
+      DATABASE_URL: 'postgresql://passemploi:passemploi@db/passemploidb'
+      REDIS_URL: 'redis://redis:6379/0'
+    depends_on:
+      - db
+      - redis
+    x-develop:
+      watch:
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: yarn.lock
+        - action: sync+restart
+          path: ./tsconfig.json
+          target: /usr/src/app/tsconfig.json
+        - action: sync
+          path: ./
+          target: /usr/src/app/
+          ignore:
+            - node_modules/
+            - dist/
+            - .vscode/
+
+  db:
+    image: postgis/postgis:16-3.4-alpine
+    platform: linux/amd64
+    container_name: cej-auth-postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: passemploi
+      POSTGRES_PASSWORD: passemploi
+      POSTGRES_DB: passemploidb
+    volumes:
+      - db-data:/var/lib/postgresql
+
+  redis:
+    image: redis/redis-stack:7.2.0-v9
+    container_name: cej-auth-redis
+    ports:
+      - '6379:6379'
+      - '8001:8001'
+    volumes:
+      - redis-data:/data
+    environment:
+      REDIS_ARGS: '--requirepass myredispassword --appendonly yes'
